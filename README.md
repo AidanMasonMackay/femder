@@ -21,13 +21,23 @@ $conda activate myenv
 
 # 3) Install all dependencies:
 
-$conda install git
+$pip install numpy scipy gmsh meshio plotly matplotlib tqdm numba cloudpickle pymoo pymkl seaborn more_itertools pytta
 
-$pip install numpy scipy gmsh meshio plotly matplotlib tqdm numba cloudpickle pymoo pymkl
+$conda install MKL
 
 $conda install -c plotly plotly-orca
 
+$pip install --user ipykernel
+
+$python -m ipykernel install --user --name=myenv
+
+$conda deactivate
+
 # 4) Install Femder:
+
+$ conda install git
+
+$ cd to desired folder for femder project
 
 $ git clone https://github.com/gutoalvim/femder.git
 
