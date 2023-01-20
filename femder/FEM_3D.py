@@ -4,7 +4,9 @@ Created on Sat Nov 28 23:33:54 2020
 
 @author: Luiz Augusto Alvim & Paulo Mareze
 """
+
 import numpy as np
+import numpy.matlib
 from scipy.sparse.linalg import spsolve
 from pyMKL import pardisoSolver
 
