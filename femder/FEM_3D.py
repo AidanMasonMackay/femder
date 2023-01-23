@@ -2040,57 +2040,53 @@ class FEM3D:
             else:
                 fig.write_image(filename+'.'+extension, scale=2)
         fig.show()
-        fig.show()       
-    def evaluate(self,R,interpolation_tolerance = 0.001, plot=False):
+        fig.show()  
+    
+    def evaluate(self, R,interpolation_tolerance = 0.001, plot=False):
         """
-        Evaluates pressure at a given receiver coordinate, for best results, include receiver
-        coordinates as nodes in mesh, by passing Receiver() in GridImport3D().
-
+        Evaluates pressure at each receiver coordinate at each frequency
+        For best results, include receiver coordinates as nodes in mesh, 
+        by passing Receiver() in GridImport3D().
+        
         Parameters
         ----------
         R : Receiver()
             Receiver object with receiver coodinates.
         plot : Bool, optional
             Plots SPL for given nodes, if len(R)>1, also plots average. The default is False.
-
+        
         Returns
         -------
         TYPE
             DESCRIPTION.
-
-        """
-        # pressure_receiver = []
-        # for i in range(len(self.receiver_positions)):
-        #     closest_node_to_receiver = numerical.closest_node(self.vertices, evaluation_positions[i, :])
-        #     if np.linalg.norm(
-        #             evaluation_positions[i, :] - self.vertices[closest_node_to_receiver]) < interpolation_tolerance:
-        #         pressure_receiver.append(self.node_pressure[:, closest_node_to_receiver])
-        #     else:
-        #         pressure_receiver.append(numerical.node_pressure_interpolation(self.vertices, self.volume_elements,
-        #                                                                        evaluation_positions[i, :],
-        #                                                                        self.node_pressure))
-        #
-        # self.pressure_receiver = np.asarray(pressure_receiver).T
         
+        """
+    
         self.R = R
-
-        self.pR = [] #np.ones([len(self.freq),len(R.coord)],dtype = np.complex128)
-
+        self.pR = np.zeros([len(self.freq),len(R.coord)],dtype = np.complex128)
+        
         for i in range(len(self.R.coord)):
             closest_node_to_receiver = closest_node(self.nos, self.R.coord[i, :])
             pt_dist = np.linalg.norm(
                     self.R.coord[i, :] - self.nos[closest_node_to_receiver])
-            print(pt_dist)
             if pt_dist < interpolation_tolerance:
-                self.pR.append(self.pN[:, closest_node(self.nos, R.coord[i, :])])
+                pR = self.pN[:, closest_node(self.nos, R.coord[i, :])]
             else:
-                self.pR.append(coord_interpolation(self.nos, self.elem_vol, self.R.coord[i, :], self.pN))
-        self.pR = np.asarray(self.pR).squeeze().T
-
-        if len(self.pR.shape) == 1:
-            self.pR = self.pR.reshape(self.pN.shape[0],1)
+                pR = coord_interpolation(self.nos, self.elem_vol, self.R.coord[i, :], self.pN)
+            self.pR[:, i] = pR
+            
+        if plot:
+            plt.figure()
+            for r_idx in range(self.pR.shape[1]):
+                plt.semilogx(self.freq, p2SPL(self.pR[:, r_idx]), label = 'R{}'.format(r_idx))
+            plt.grid()
+            plt.legend()
+            plt.xlabel('Frequency[Hz]')
+            plt.ylabel('SPL [dB]')
+            plt.show()
+            
         return self.pR
-    
+
     def evaluate_physical_group(self,domain_index,average=True,plot=False):
         """
         Evaluates pressure at a given receiver coordinate, for best results, include receiver
