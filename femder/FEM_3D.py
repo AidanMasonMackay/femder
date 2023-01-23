@@ -2225,13 +2225,13 @@ class FEM3D:
         fig['layout']['scene'].update(go.layout.Scene(aspectmode='data'))
         try:
             if self.R != None:
-                fig.add_trace(go.Scatter3d(x = self.R.coord[:,0], y = self.R.coord[:,1], z = self.R.coord[:,2],name="Receivers",mode='markers'))
+                fig.add_trace(go.Scatter3d(x = self.R.coord[:,0], y = self.R.coord[:,1], z = self.R.coord[:,2],name="Receivers",mode='markers', marker = dict(color="black")))
         except:
             pass
         
         if self.S != None:    
             if self.S.wavetype == "spherical":
-                fig.add_trace(go.Scatter3d(x = self.S.coord[:,0], y = self.S.coord[:,1], z = self.S.coord[:,2],name="Sources",mode='markers'))
+                fig.add_trace(go.Scatter3d(x = self.S.coord[:,0], y = self.S.coord[:,1], z = self.S.coord[:,2],name="Sources",mode='markers', marker = dict(color="red")))
         
         if self.BC != None:
             i = 0
